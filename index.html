@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <link rel="icon" href="data:," />
+  <title>Harness Comparison for Bevy Port</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap');
+    :root {
+      --bg: #f2f5f4;
+      --paper: #ffffff;
+      --paper-2: #e8efed;
+      --ink: #13221f;
+      --muted: #4d615c;
+      --line: #c8d4d0;
+      --line-strong: #8ea29b;
+      --accent: #006b54;
+      --accent-2: #004f3e;
+      --accent-soft: #d9eee8;
+      --amber: #9b5900;
+      --amber-soft: #fff0d2;
+      --red: #9b352b;
+      --red-soft: #fbe5e2;
+      --blue: #245f86;
+      --blue-soft: #e2eff8;
+      --shadow: 0 18px 50px rgba(22, 49, 42, .08);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #101816;
+        --paper: #17231f;
+        --paper-2: #1e2d29;
+        --ink: #ecf5f1;
+        --muted: #adc0b9;
+        --line: #344840;
+        --line-strong: #647d74;
+        --accent: #55d4b0;
+        --accent-2: #8be6cb;
+        --accent-soft: #173b32;
+        --amber: #f3b65f;
+        --amber-soft: #3b2d17;
+        --red: #f08b81;
+        --red-soft: #40231f;
+        --blue: #7ec3ed;
+        --blue-soft: #193246;
+        --shadow: 0 20px 60px rgba(0, 0, 0, .25);
+      }
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background:
+        linear-gradient(var(--line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line) 1px, transparent 1px),
+        var(--bg);
+      background-size: 34px 34px;
+      color: var(--ink);
+      font-family: Manrope, sans-serif;
+      line-height: 1.55;
+    }
+    a { color: inherit; }
+    button { font: inherit; }
+    .shell { width: min(1180px, calc(100% - 34px)); margin: 24px auto 80px; }
+    .mast {
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(260px, .55fr);
+      gap: 34px;
+      padding: clamp(30px, 6vw, 72px);
+      background: var(--paper);
+      border: 1px solid var(--line-strong);
+      box-shadow: var(--shadow);
+    }
+    .mast:before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 8px;
+      background: var(--accent);
+    }
+    .kicker, .mono { font-family: "IBM Plex Mono", monospace; }
+    .kicker {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 18px;
+      color: var(--accent-2);
+      font-size: .77rem;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    h1 {
+      max-width: 820px;
+      margin: 22px 0 18px;
+      font-size: clamp(2.25rem, 5.8vw, 5.1rem);
+      line-height: .98;
+      letter-spacing: -.055em;
+      text-wrap: balance;
+    }
+    .lede { max-width: 760px; margin: 0; color: var(--muted); font-size: clamp(1.03rem, 2vw, 1.25rem); }
+    .verdict {
+      align-self: end;
+      border-top: 4px solid var(--accent);
+      padding-top: 18px;
+    }
+    .verdict strong { display: block; font-size: 1.08rem; margin-bottom: 8px; }
+    .verdict p { margin: 0; color: var(--muted); }
+    .score { display: flex; align-items: baseline; gap: 9px; margin-top: 20px; }
+    .score b { font-size: 2.8rem; line-height: 1; letter-spacing: -.06em; }
+    .score span { color: var(--muted); font-size: .82rem; }
+
+    .layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 30px; margin-top: 30px; }
+    aside { position: sticky; top: 18px; align-self: start; }
+    .rail {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      padding: 12px;
+      box-shadow: 0 8px 26px rgba(22,49,42,.05);
+    }
+    .rail a {
+      display: block;
+      padding: 11px 12px;
+      text-decoration: none;
+      color: var(--muted);
+      border-bottom: 1px solid var(--line);
+      font-size: .88rem;
+    }
+    .rail a:last-child { border: 0; }
+    .rail a:hover, .rail a:focus { background: var(--accent-soft); color: var(--accent-2); }
+    .rail-note { margin: 14px 3px 0; color: var(--muted); font: .7rem/1.5 "IBM Plex Mono", monospace; }
+    main section { scroll-margin-top: 18px; }
+    .section { margin-bottom: 54px; }
+    .section-head { display: grid; grid-template-columns: 64px 1fr; gap: 14px; align-items: start; margin-bottom: 22px; }
+    .num { font: 600 .78rem/1 "IBM Plex Mono", monospace; color: var(--accent-2); padding-top: 10px; border-top: 2px solid var(--accent); }
+    h2 { margin: 0; font-size: clamp(1.75rem, 3vw, 2.65rem); line-height: 1.08; letter-spacing: -.04em; }
+    .section-copy { margin: 7px 0 0; color: var(--muted); max-width: 780px; }
+
+    .stack-plan { display: grid; gap: 12px; }
+    .plan-step {
+      display: grid;
+      grid-template-columns: 76px 1fr minmax(170px, .34fr);
+      gap: 20px;
+      align-items: center;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      padding: 22px;
+    }
+    .plan-step .step-no { font: 600 1.3rem/1 "IBM Plex Mono", monospace; color: var(--accent); }
+    .plan-step h3 { margin: 0 0 4px; font-size: 1.08rem; }
+    .plan-step p { margin: 0; color: var(--muted); font-size: .9rem; }
+    .tool-tag { justify-self: end; color: var(--accent-2); background: var(--accent-soft); padding: 7px 10px; font: 600 .72rem "IBM Plex Mono", monospace; }
+
+    .filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px 78px; }
+    .filter {
+      border: 1px solid var(--line-strong);
+      background: var(--paper);
+      color: var(--muted);
+      padding: 8px 13px;
+      cursor: pointer;
+      font-size: .8rem;
+      font-weight: 700;
+    }
+    .filter[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+    .cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      padding: 24px;
+      min-width: 0;
+    }
+    .card[hidden] { display: none; }
+    .card-top { display: flex; gap: 14px; justify-content: space-between; align-items: start; }
+    .card h3 { margin: 0; font-size: 1.2rem; letter-spacing: -.02em; }
+    .badge { white-space: nowrap; padding: 5px 8px; font: 600 .67rem "IBM Plex Mono", monospace; text-transform: uppercase; }
+    .adopt { color: var(--accent-2); background: var(--accent-soft); }
+    .later { color: var(--amber); background: var(--amber-soft); }
+    .skip { color: var(--red); background: var(--red-soft); }
+    .idea { color: var(--blue); background: var(--blue-soft); }
+    .fit { margin: 15px 0; font: 500 .76rem "IBM Plex Mono", monospace; color: var(--muted); }
+    .fit b { color: var(--ink); }
+    .proscons { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; border-top: 1px solid var(--line); padding-top: 15px; }
+    .proscons h4 { margin: 0 0 6px; font: 600 .68rem "IBM Plex Mono", monospace; text-transform: uppercase; color: var(--muted); }
+    .proscons ul { margin: 0; padding-left: 17px; font-size: .84rem; }
+    .proscons li + li { margin-top: 5px; }
+    .card .source { display: inline-block; margin-top: 18px; color: var(--accent-2); font: 600 .72rem "IBM Plex Mono", monospace; text-underline-offset: 3px; }
+
+    .rank-list { counter-reset: rank; display: grid; gap: 8px; }
+    .rank-row {
+      counter-increment: rank;
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+      padding: 15px 18px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+    }
+    .rank-row:before { content: counter(rank, decimal-leading-zero); font: 600 .88rem "IBM Plex Mono", monospace; color: var(--accent); }
+    .rank-row strong { font-size: .95rem; }
+    .rank-row span { color: var(--muted); font-size: .78rem; text-align: right; }
+
+    .local-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .local-box { background: var(--paper); border: 1px solid var(--line); padding: 24px; }
+    .local-box h3 { margin: 0 0 12px; }
+    .local-box p { color: var(--muted); margin: 0 0 12px; }
+    .roleline { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); font-size: .85rem; }
+    .roleline b { color: var(--accent-2); }
+    pre {
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+      background: var(--ink);
+      color: var(--paper);
+      padding: 16px;
+      margin: 14px 0 0;
+      font: .74rem/1.55 "IBM Plex Mono", monospace;
+    }
+    .warning { margin-top: 14px; padding: 14px 16px; background: var(--amber-soft); color: var(--amber); font-size: .84rem; }
+
+    .not-now { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .not-now article { padding: 20px; background: var(--red-soft); border-top: 3px solid var(--red); }
+    .not-now h3 { margin: 0 0 8px; font-size: 1rem; }
+    .not-now p { margin: 0; color: var(--muted); font-size: .84rem; }
+
+    .open-questions { background: var(--paper); border: 1px dashed var(--line-strong); padding: 24px; }
+    .open-questions ul { margin: 0; padding-left: 20px; }
+    .open-questions li + li { margin-top: 8px; }
+    .sources { display: grid; grid-template-columns: 1fr 1fr; gap: 9px 22px; }
+    .sources a { overflow-wrap: anywhere; color: var(--muted); font: .72rem/1.45 "IBM Plex Mono", monospace; text-underline-offset: 3px; }
+    .sources a:hover { color: var(--accent-2); }
+    .method { margin-top: 20px; color: var(--muted); font-size: .76rem; }
+    footer { margin-top: 40px; padding: 22px 0; border-top: 1px solid var(--line-strong); color: var(--muted); font: .72rem "IBM Plex Mono", monospace; }
+
+    @media (max-width: 860px) {
+      .mast { grid-template-columns: 1fr; }
+      .layout { grid-template-columns: 1fr; }
+      aside { position: static; overflow: hidden; }
+      .rail { display: flex; flex-wrap: wrap; gap: 4px; }
+      .rail a { border: 0; background: var(--paper-2); padding: 8px 10px; }
+      .rail-note { display: none; }
+      .cards, .local-grid { grid-template-columns: 1fr; }
+      .filters { margin-left: 0; }
+      .not-now { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .shell { width: min(100% - 20px, 1180px); margin-top: 10px; }
+      .mast { padding: 30px 24px; }
+      .mast:before { width: 5px; }
+      h1 { font-size: 2.65rem; }
+      .section-head { grid-template-columns: 46px 1fr; }
+      .plan-step { grid-template-columns: 46px 1fr; padding: 18px; }
+      .tool-tag { grid-column: 2; justify-self: start; }
+      .proscons { grid-template-columns: 1fr; }
+      .rank-row { grid-template-columns: 34px 1fr; }
+      .rank-row span { grid-column: 2; text-align: left; }
+      .sources { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="mast">
+      <div>
+        <div class="kicker"><span>Research brief · 09 Oct 2026</span><span>Windows · Claude Code · Bevy 0.19</span></div>
+        <h1>Don’t install a harness. Assemble the right one.</h1>
+        <p class="lede">For a GameCube-era 3D port, the best fit is Claude Code’s native loop—subagents, hooks, skills and MCP—paired with Bevy Remote Protocol tooling. The purpose-built game harnesses are either the wrong engine, the wrong platform, or ideas rather than installable software.</p>
+      </div>
+      <aside class="verdict">
+        <strong>Recommended stack</strong>
+        <p>Claude Code native + Bevy BRP MCP + a cold critic + cargo gates.</p>
+        <div class="score"><b>4</b><span>layers<br>to start</span></div>
+      </aside>
+    </header>
+
+    <div class="layout">
+      <aside>
+        <nav class="rail" aria-label="Report sections">
+          <a href="#setup">The setup</a>
+          <a href="#field">Field guide</a>
+          <a href="#ranking">Claude fit</a>
+          <a href="#local">Local AI</a>
+          <a href="#avoid">Skip for now</a>
+          <a href="#unknowns">Open questions</a>
+          <a href="#sources">Sources</a>
+        </nav>
+        <p class="rail-note">Evidence level: indexed web sources. App behavior was not live-tested.</p>
+      </aside>
+
+      <main>
+        <section class="section" id="setup">
+          <div class="section-head"><span class="num">01</span><div><h2>The stack to build now</h2><p class="section-copy">A harness is the loop around the model: plan, change, observe, verify, and gate. Each layer below has one job.</p></div></div>
+          <div class="stack-plan">
+            <article class="plan-step"><span class="step-no">01</span><div><h3>Encode the project rules</h3><p>Pin Bevy 0.19, require docs.rs checks for changed APIs, and document the module-per-system porting convention.</p></div><span class="tool-tag">CLAUDE.md + Skill</span></article>
+            <article class="plan-step"><span class="step-no">02</span><div><h3>Gate every Rust edit</h3><p>Use Claude Code hooks for <span class="mono">cargo fmt --check</span>, <span class="mono">cargo clippy</span>, <span class="mono">cargo check</span>, and tests.</p></div><span class="tool-tag">Hooks</span></article>
+            <article class="plan-step"><span class="step-no">03</span><div><h3>Separate builder from reviewer</h3><p>A fresh-context cold critic reads the diff and evidence without inheriting the builder’s assumptions.</p></div><span class="tool-tag">Subagents</span></article>
+            <article class="plan-step"><span class="step-no">04</span><div><h3>Observe the running world</h3><p>Add Bevy’s RemotePlugin and RemoteHttpPlugin behind a dev feature; use BRP tooling for entity/component queries, live mutations, and—where supported—viewport screenshots.</p></div><span class="tool-tag">Bevy BRP MCP</span></article>
+          </div>
+        </section>
+
+        <section class="section" id="field">
+          <div class="section-head"><span class="num">02</span><div><h2>Harness field guide</h2><p class="section-copy">Filter by what to adopt, revisit, or avoid. “Bevy fit” describes this project, not the tool’s general quality.</p></div></div>
+          <div class="filters" role="group" aria-label="Filter harnesses">
+            <button class="filter" data-filter="all" aria-pressed="true">All</button>
+            <button class="filter" data-filter="adopt" aria-pressed="false">Adopt now</button>
+            <button class="filter" data-filter="later" aria-pressed="false">Later</button>
+            <button class="filter" data-filter="skip" aria-pressed="false">Skip</button>
+            <button class="filter" data-filter="idea" aria-pressed="false">Borrow ideas</button>
+          </div>
+          <div class="cards" id="cards">
+            <article class="card" data-status="adopt">
+              <div class="card-top"><h3>Claude Code native</h3><span class="badge adopt">Adopt now</span></div>
+              <p class="fit"><b>Bevy:</b> strong · <b>Windows:</b> yes · <b>Cost:</b> current subscription/API</p>
+              <div class="proscons"><div><h4>Pros</h4><ul><li>No second orchestration layer</li><li>Hooks make cargo gates deterministic</li><li>Subagents support planner, builder, critic</li><li>MCP connects to the live game</li></ul></div><div><h4>Cons</h4><ul><li>You assemble the workflow yourself</li><li>Agent Teams are experimental</li><li>Parallel teammates multiply token use</li></ul></div></div>
+              <a class="source" href="https://shipyard.build/blog/claude-code-multi-agent/" target="_blank" rel="noreferrer">Source ↗</a>
+            </article>
+
+            <article class="card" data-status="adopt">
+              <div class="card-top"><h3>Bevy BRP MCP stack</h3><span class="badge adopt">Adopt now</span></div>
+              <p class="fit"><b>Bevy:</b> purpose-built · <b>Windows:</b> yes · <b>Cost:</b> open source</p>
+              <div class="proscons"><div><h4>Pros</h4><ul><li>Queries entities, components and resources</li><li>Can mutate values without recompiling</li><li>grok-bevy adds viewport screenshots</li><li>bevy_brp_extras 0.22.x targets Bevy 0.19</li></ul></div><div><h4>Cons</h4><ul><li>joaqim/bevy_mcp docs target 0.18</li><li>Requires RemotePlugin in the game</li><li>Visual review needs a GPU-backed run</li><li>0.19 compatibility needs a local proof</li></ul></div></div>
+              <a class="source" href="https://github.com/ironadamant/grok-bevy" target="_blank" rel="noreferrer">grok-bevy ↗</a>
+            </article>
+
+            <article class="card" data-status="idea">
+              <div class="card-top"><h3>egnaro9 architecture</h3><span class="badge idea">Borrow ideas</span></div>
+              <p class="fit"><b>Bevy:</b> adaptable · <b>Windows:</b> n/a · <b>Cost:</b> free documentation</p>
+              <div class="proscons"><div><h4>Pros</h4><ul><li>Strongest verification pattern</li><li>Cold-context critic</li><li>Differential oracle suits a port</li><li>Property tests plus human gates</li></ul></div><div><h4>Cons</h4><ul><li>Not runnable software</li><li>Requires implementing the pattern</li><li>No Bevy-specific tooling</li></ul></div></div>
+              <a class="source" href="https://github.com/egnaro9/agentic-dev-harness" target="_blank" rel="noreferrer">Case study ↗</a>
+            </article>
+
+            <article class="card" data-status="later">
+              <div class="card-top"><h3>Ralph harness</h3><span class="badge later">Later</span></div>
+              <p class="fit"><b>Bevy:</b> adaptable · <b>Windows:</b> yes · <b>Cost:</b> free / MIT</p>
+              <div class="proscons"><div><h4>Pros</h4><ul><li>Small, guarded iterations</li><li>Fresh context and hard caps</li><li>Supports Claude Code</li><li>Cargo gates are straightforward to substitute</li></ul></div><div><h4>Cons</h4><ul><li>Python-flavored defaults</li><li>Single-worker loop</li><li>No visual verification</li></ul></div></div>
+              <a class="source" href="https://github.com/rxdt/py_ralph_frame" target="_blank" rel="noreferrer">Repository ↗</a>
+            </article>
+
+            <article class="card" data-status="later">
+              <div class="card-top"><h3>Agent Teams</h3><span class="badge later">Later</span></div>
+              <p class="fit"><b>Bevy:</b> generic · <b>Windows:</b> yes · <b>Cost:</b> high token use</p>
+              <div class="proscons"><div><h4>Pros</h4><ul><li>Independent teammate sessions</li><li>Shared task list and direct messaging</li><li>Useful for cleanly separated subsystems</li></ul></div><div><h4>Cons</h4><ul><li>Experimental research preview</li><li>API has been changing</li><li>Token cost scales roughly with team size</li><li>Requires interactive sessions</li></ul></div></div>
+              <a class="source" href="https://github.com/mttzzz/claude-code-agent-teams/blob/HEAD/skill/agent-teams-orchestration/SKILL.md" target="_blank" rel="noreferrer">Orchestration skill ↗</a>
+            </article>
+
+            <article class="card" data-status="skip">
+              <div class="card-top"><h3>Genex</h3><span class="badge skip">Watch, don’t adopt</span></div>
+              <p class="fit"><b>Bevy:</b> no · <b>Windows:</b> coming soon · <b>Cost:</b> MIT + model access</p>
+              <div class="proscons"><div><h4>Pros</h4><ul><li>True game-dev harness</li><li>Per-role model assignment</li><li>Visual judges, snapshots and rollback</li><li>Local models via Ollama/Bonsai</li></ul></div><div><h4>Cons</h4><ul><li>Three.js only</li><li>No Windows build yet</li><li>No Rust/Bevy path</li><li>Launched 5 October 2026; still very new</li></ul></div></div>
+              <a class="source" href="https://genex.games/desktop" target="_blank" rel="noreferrer">Product page ↗</a>
+            </article>
+
+            <article class="card" data-status="skip">
+              <div class="card-top"><h3>tmux fleets</h3><span class="badge skip">Skip</span></div>
+              <p class="fit"><b>Bevy:</b> generic · <b>Windows:</b> WSL2 friction · <b>Cost:</b> model usage</p>
+              <div class="proscons"><div><h4>Pros</h4><ul><li>Parallel autonomous sessions</li><li>Role hats mirror planner/oracle/fixer patterns</li><li>claude-tmux is built around Claude Code</li></ul></div><div><h4>Cons</h4><ul><li>tmux complicates Windows setup</li><li>No game-specific verification</li><li>Built-in subagents already cover the core need</li><li>Community maintenance varies</li></ul></div></div>
+              <a class="source" href="https://github.com/ilm-alan/claude-tmux" target="_blank" rel="noreferrer">claude-tmux ↗</a>
+            </article>
+
+            <article class="card" data-status="skip">
+              <div class="card-top"><h3>bevy_debugger_mcp</h3><span class="badge skip">Skip</span></div>
+              <p class="fit"><b>Bevy:</b> old target · <b>Windows:</b> yes · <b>Cost:</b> open source</p>
+              <div class="proscons"><div><h4>Pros</h4><ul><li>Bevy-specific debugger orientation</li><li>Low setup overhead</li></ul></div><div><h4>Cons</h4><ul><li>Targets Bevy 0.14+</li><li>Not a complete dev loop</li><li>README self-labels it “100% vibe coded”</li></ul></div></div>
+              <a class="source" href="https://github.com/iflow-mcp/ladvien-bevy_debugger_mcp" target="_blank" rel="noreferrer">Repository ↗</a>
+            </article>
+
+            <article class="card" data-status="idea">
+              <div class="card-top"><h3>Unity / Unreal / Godot MCPs</h3><span class="badge idea">Borrow ideas</span></div>
+              <p class="fit"><b>Bevy:</b> no · <b>Windows:</b> yes · <b>Use:</b> design reference</p>
+              <div class="proscons"><div><h4>Transferable</h4><ul><li>Live world inspection</li><li>Screenshot-based judges</li><li>Engine knowledge skills</li><li>Scripted-input playtesting</li></ul></div><div><h4>Limits</h4><ul><li>Engine bridges do not port to Bevy</li><li>No equivalent scripted-input Bevy loop was found</li><li>Would require a custom input tool</li></ul></div></div>
+              <a class="source" href="https://github.com/GenieEngine/GenieEngine" target="_blank" rel="noreferrer">GenieEngine example ↗</a>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="ranking">
+          <div class="section-head"><span class="num">03</span><div><h2>Claude Code fit, ranked</h2><p class="section-copy">The ranking favors direct CLI integration, Bevy relevance and low Windows friction.</p></div></div>
+          <div class="rank-list">
+            <div class="rank-row"><strong>Native primitives</strong><span>Best fit · start here</span></div>
+            <div class="rank-row"><strong>Bevy BRP MCP servers</strong><span>Direct Claude Code integration</span></div>
+            <div class="rank-row"><strong>Ralph harness</strong><span>Thin, compatible wrapper</span></div>
+            <div class="rank-row"><strong>claude-tmux</strong><span>Good fit, Windows friction</span></div>
+            <div class="rank-row"><strong>Agent Teams</strong><span>Built-in, experimental, costly</span></div>
+            <div class="rank-row"><strong>multi-agent-shogun</strong><span>Compatible, heavier than needed</span></div>
+            <div class="rank-row"><strong>Genex</strong><span>Claude integration; wrong target</span></div>
+            <div class="rank-row"><strong>Unity / Unreal MCPs</strong><span>Ideas only</span></div>
+          </div>
+        </section>
+
+        <section class="section" id="local">
+          <div class="section-head"><span class="num">04</span><div><h2>Can Claude delegate to local AI?</h2><p class="section-copy">Yes—with a proxy and carefully scoped roles. It is practical for cheap extraction work, not the core Rust/Bevy reasoning.</p></div></div>
+          <div class="local-grid">
+            <article class="local-box">
+              <h3>The concrete route</h3>
+              <p>LiteLLM can expose an Anthropic-compatible endpoint to Claude Code while routing selected aliases to Ollama, LM Studio, or a llama.cpp server.</p>
+              <pre>Claude Code
+  → LiteLLM on localhost:4000
+    → haiku alias → local coder model
+    → sonnet/opus → Anthropic</pre>
+              <div class="warning">Small local models have weaker tool-calling reliability. Keep them on extractor-style tasks.</div>
+              <a class="source" href="https://github.com/thomaslangbroek/frugal/blob/HEAD/docs/litellm-recipe.md" target="_blank" rel="noreferrer">LiteLLM routing recipe ↗</a>
+            </article>
+            <article class="local-box">
+              <h3>Use the right model for the role</h3>
+              <div class="roleline"><span>Scout original code</span><b>Local</b></div>
+              <div class="roleline"><span>Summarize modules</span><b>Local</b></div>
+              <div class="roleline"><span>Draft asset manifests</span><b>Local</b></div>
+              <div class="roleline"><span>Triage build logs</span><b>Local</b></div>
+              <div class="roleline"><span>Plan subsystem ports</span><b>Frontier</b></div>
+              <div class="roleline"><span>Implement Bevy systems</span><b>Frontier</b></div>
+              <div class="roleline"><span>Cold-critic review</span><b>Frontier</b></div>
+              <p style="margin-top:14px">The hard parts combine the borrow checker, ECS design, fast-changing Bevy APIs, and long-horizon reasoning. A bad local edit can cost more in rebuild loops than it saves.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="avoid">
+          <div class="section-head"><span class="num">05</span><div><h2>What not to bother with—yet</h2></div></div>
+          <div class="not-now">
+            <article><h3>Genex</h3><p>Revisit only after Windows and a Bevy/Rust or native-target plugin exist.</p></article>
+            <article><h3>tmux orchestration</h3><p>Built-in subagents and background tasks avoid WSL2 complexity for this setup.</p></article>
+            <article><h3>Engine-mismatched MCPs</h3><p>Unity and Unreal tools are useful patterns, but their bridges do not transfer.</p></article>
+          </div>
+        </section>
+
+        <section class="section" id="unknowns">
+          <div class="section-head"><span class="num">06</span><div><h2>What still needs a local proof</h2></div></div>
+          <div class="open-questions">
+            <ul>
+              <li>Whether <span class="mono">joaqim/bevy_mcp</span> works end-to-end with Bevy 0.19; its README targets 0.18.</li>
+              <li>grok-bevy’s practical screenshot quality and Bevy 0.19 compatibility.</li>
+              <li>Genex’s Windows release date and any Bevy roadmap beyond stated Unity/Unreal plugin plans.</li>
+              <li>Real token cost for Agent Teams on a port of this scale.</li>
+              <li>A mature Blender-specific MCP was not researched; the recommendation remains Blender’s Python API through Claude Code.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="section" id="sources">
+          <div class="section-head"><span class="num">07</span><div><h2>Selected sources</h2><p class="section-copy">Primary and implementation-oriented references used for the recommendation.</p></div></div>
+          <div class="sources">
+            <a href="https://github.com/genex-games/genex/blob/HEAD/README.md" target="_blank" rel="noreferrer">Genex README</a>
+            <a href="https://github.com/egnaro9/agentic-dev-harness" target="_blank" rel="noreferrer">agentic-dev-harness</a>
+            <a href="https://github.com/joaqim/bevy_mcp" target="_blank" rel="noreferrer">joaqim/bevy_mcp</a>
+            <a href="https://github.com/raibid-labs/bevy-mcp-ref/blob/HEAD/CLAUDE.md" target="_blank" rel="noreferrer">bevy-mcp-ref workflow</a>
+            <a href="https://github.com/ironadamant/grok-bevy" target="_blank" rel="noreferrer">grok-bevy</a>
+            <a href="https://github.com/acevik/baylee/blob/HEAD/.claude/skills/bevy/SKILL.md" target="_blank" rel="noreferrer">Bevy 0.19 skill pattern</a>
+            <a href="https://github.com/rxdt/py_ralph_frame/blob/HEAD/README.md" target="_blank" rel="noreferrer">Ralph harness README</a>
+            <a href="https://github.com/ilm-alan/claude-tmux" target="_blank" rel="noreferrer">claude-tmux</a>
+            <a href="https://github.com/incept5/mlcon-munich-2026/blob/HEAD/day-2/CLAUDE_CODE_OLLAMA_QUICKSTART.md" target="_blank" rel="noreferrer">Claude Code + Ollama quickstart</a>
+            <a href="https://github.com/l69d/anyclaude" target="_blank" rel="noreferrer">anyclaude</a>
+            <a href="https://github.com/thomaslangbroek/frugal/blob/HEAD/docs/litellm-recipe.md" target="_blank" rel="noreferrer">LiteLLM per-tier routing</a>
+            <a href="https://github.com/maweis1981/rust_bevy_lua_game/blob/HEAD/docs/blog/2026-07-07-generate-game-art-with-claude-code.md" target="_blank" rel="noreferrer">Bevy asset pipeline pattern</a>
+          </div>
+          <p class="method">Research snapshot: 9 October 2026. Findings came from indexed web pages and repository documentation; no tool behavior was verified in a live browser session. Product compatibility claims marked above as open questions should be proved in a small branch before being added to the port.</p>
+        </section>
+      </main>
+    </div>
+    <footer>Decision: Claude Code native + Bevy BRP MCP now · LiteLLM local delegation later · Genex on watch</footer>
+  </div>
+
+  <script>
+    (function () {
+      var buttons = document.querySelectorAll('.filter');
+      var cards = document.querySelectorAll('.card[data-status]');
+      buttons.forEach(function (button) {
+        button.addEventListener('click', function () {
+          var filter = button.getAttribute('data-filter');
+          buttons.forEach(function (b) { b.setAttribute('aria-pressed', b === button ? 'true' : 'false'); });
+          cards.forEach(function (card) {
+            card.hidden = filter !== 'all' && card.getAttribute('data-status') !== filter;
+          });
+        });
+      });
+    }());
+  </script>
+</body>
+</html>
