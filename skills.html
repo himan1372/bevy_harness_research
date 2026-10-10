@@ -1,0 +1,636 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#f3f5f6" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0d1114" media="(prefers-color-scheme: dark)" />
+  <link rel="icon" href="data:," />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <title>Recommended Skills for Rust and Bevy</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f3f5f6;
+      --surface: #ffffff;
+      --surface-2: #e9eef0;
+      --ink: #172026;
+      --muted: #54636b;
+      --line: #cbd4d8;
+      --line-strong: #9eacb2;
+      --rust: #b84e24;
+      --rust-soft: #f7dfd5;
+      --teal: #087d79;
+      --teal-soft: #d4efed;
+      --amber: #956400;
+      --amber-soft: #f5e8bd;
+      --code: #11181d;
+      --code-ink: #d9e5ea;
+      --focus: #087d79;
+      --shadow: 0 16px 44px rgba(17, 32, 40, .09);
+      --radius-s: 7px;
+      --radius-m: 14px;
+      --max: 1180px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0d1114;
+        --surface: #151b1f;
+        --surface-2: #1b2429;
+        --ink: #ecf2f4;
+        --muted: #a8b5bb;
+        --line: #344149;
+        --line-strong: #51616a;
+        --rust: #ef865e;
+        --rust-soft: #42271f;
+        --teal: #5fc9c3;
+        --teal-soft: #183c3b;
+        --amber: #e1bc59;
+        --amber-soft: #3c3219;
+        --code: #080c0f;
+        --code-ink: #d8e3e8;
+        --focus: #5fc9c3;
+        --shadow: 0 18px 48px rgba(0, 0, 0, .25);
+      }
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "IBM Plex Sans", sans-serif;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    button { font: inherit; }
+    :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+
+    .wrap { width: min(var(--max), calc(100% - 40px)); margin: 0 auto; }
+    .mono { font-family: "IBM Plex Mono", monospace; }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(56px, 8vw, 98px) 0 54px;
+      border-bottom: 1px solid var(--line);
+      background:
+        linear-gradient(90deg, color-mix(in srgb, var(--rust-soft) 52%, transparent), transparent 42%),
+        var(--bg);
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto auto;
+      width: min(44vw, 560px);
+      height: 100%;
+      opacity: .28;
+      background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+      background-size: 28px 28px;
+      mask-image: linear-gradient(90deg, transparent, #000 42%);
+      pointer-events: none;
+    }
+    .hero-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(280px, .7fr);
+      align-items: end;
+      gap: clamp(32px, 7vw, 88px);
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin: 0 0 18px;
+      color: var(--rust);
+      font: 600 12px/1.2 "IBM Plex Mono", monospace;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+    }
+    .eyebrow::before { content: ""; width: 30px; height: 2px; background: currentColor; }
+    h1 {
+      max-width: 760px;
+      margin: 0;
+      font-size: clamp(36px, 5.4vw, 64px);
+      line-height: .99;
+      letter-spacing: -.045em;
+      font-weight: 700;
+    }
+    .hero-copy {
+      max-width: 730px;
+      margin: 24px 0 0;
+      color: var(--muted);
+      font-size: clamp(17px, 2vw, 21px);
+      line-height: 1.55;
+    }
+    .verdict {
+      padding: 22px 0 4px 22px;
+      border-left: 3px solid var(--teal);
+    }
+    .verdict-label { margin: 0 0 8px; color: var(--teal); font: 600 12px/1.3 "IBM Plex Mono", monospace; text-transform: uppercase; letter-spacing: .08em; }
+    .verdict strong { display: block; font-size: 19px; line-height: 1.3; }
+    .verdict p { margin: 9px 0 0; color: var(--muted); font-size: 14px; }
+
+    .signal-bar { background: var(--surface); border-bottom: 1px solid var(--line); }
+    .signals { display: grid; grid-template-columns: repeat(4, 1fr); }
+    .signal { padding: 19px 22px; border-right: 1px solid var(--line); }
+    .signal:first-child { padding-left: 0; }
+    .signal:last-child { border-right: 0; }
+    .signal strong { display: block; color: var(--ink); font-size: 20px; }
+    .signal span { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; }
+
+    .page-grid {
+      display: grid;
+      grid-template-columns: 208px minmax(0, 1fr);
+      gap: clamp(34px, 6vw, 76px);
+      padding: 58px 0 90px;
+    }
+    .side { position: sticky; top: 24px; align-self: start; }
+    .side p { margin: 0 0 13px; color: var(--muted); font: 600 11px/1.4 "IBM Plex Mono", monospace; text-transform: uppercase; letter-spacing: .08em; }
+    .side a {
+      display: block;
+      padding: 8px 0;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      border-bottom: 1px solid transparent;
+    }
+    .side a:hover { color: var(--ink); border-color: var(--line); }
+    .side .snapshot { margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+
+    .content section { scroll-margin-top: 24px; }
+    .content section + section { margin-top: 78px; }
+    .section-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(180px, .45fr); gap: 28px; align-items: end; margin-bottom: 28px; }
+    .section-no { color: var(--rust); font: 600 12px/1.2 "IBM Plex Mono", monospace; letter-spacing: .07em; }
+    h2 { margin: 8px 0 0; font-size: clamp(27px, 3.5vw, 40px); line-height: 1.08; letter-spacing: -.035em; }
+    .section-head > p { margin: 0; color: var(--muted); font-size: 14px; }
+
+    .decision {
+      display: grid;
+      grid-template-columns: 52px minmax(0, 1fr) auto;
+      gap: 20px;
+      align-items: start;
+      padding: 24px 0;
+      border-top: 1px solid var(--line);
+    }
+    .decision:last-child { border-bottom: 1px solid var(--line); }
+    .rank { color: var(--line-strong); font: 600 22px/1 "IBM Plex Mono", monospace; }
+    .decision h3 { margin: 0; font-size: 20px; line-height: 1.2; }
+    .decision .meta { margin: 5px 0 0; color: var(--muted); font: 500 12px/1.4 "IBM Plex Mono", monospace; }
+    .decision p { margin: 12px 0 0; color: var(--muted); }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 10px;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      font: 600 11px/1.1 "IBM Plex Mono", monospace;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      white-space: nowrap;
+    }
+    .tag.adapt { color: var(--teal); background: var(--teal-soft); }
+    .tag.write { color: var(--rust); background: var(--rust-soft); }
+    .tag.install { color: var(--amber); background: var(--amber-soft); }
+    .decision a, .source-link { color: var(--teal); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+
+    .coordination {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(300px, .9fr);
+      gap: 26px;
+      padding: clamp(24px, 4vw, 38px);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-top: 5px solid var(--teal);
+      box-shadow: var(--shadow);
+    }
+    .coordination h3 { margin: 0; font-size: 24px; line-height: 1.2; }
+    .coordination p { color: var(--muted); }
+    .rules { margin: 24px 0 0; padding: 0; list-style: none; counter-reset: rules; }
+    .rules li { display: grid; grid-template-columns: 26px 1fr; gap: 10px; margin: 12px 0; }
+    .rules li::before { counter-increment: rules; content: counter(rules); display: grid; place-items: center; width: 22px; height: 22px; color: var(--teal); border: 1px solid var(--teal); border-radius: 50%; font: 600 11px/1 "IBM Plex Mono", monospace; }
+    .code-box { position: relative; min-width: 0; align-self: stretch; }
+    pre {
+      min-height: 100%;
+      margin: 0;
+      padding: 22px;
+      overflow: auto;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      background: var(--code);
+      color: var(--code-ink);
+      border-radius: var(--radius-s);
+      font: 400 12px/1.65 "IBM Plex Mono", monospace;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 6px 9px;
+      color: var(--code-ink);
+      background: #263138;
+      border: 1px solid #46545c;
+      border-radius: 5px;
+      cursor: pointer;
+      font: 600 10px/1.1 "IBM Plex Mono", monospace;
+    }
+    .copy-btn:hover { background: #344149; }
+
+    .callout {
+      margin-top: 20px;
+      padding: 16px 18px;
+      background: var(--amber-soft);
+      color: color-mix(in srgb, var(--ink) 86%, var(--amber));
+      border-left: 3px solid var(--amber);
+      font-size: 14px;
+    }
+
+    .filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 22px; }
+    .filter {
+      padding: 9px 13px;
+      color: var(--muted);
+      background: transparent;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      cursor: pointer;
+      font: 600 12px/1 "IBM Plex Mono", monospace;
+    }
+    .filter:hover, .filter.active { color: var(--surface); background: var(--ink); border-color: var(--ink); }
+    .inventory { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
+    .skill {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      padding: 20px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-s);
+    }
+    .skill.hide { display: none; }
+    .skill-top { display: flex; justify-content: space-between; gap: 12px; align-items: start; }
+    .skill h3 { margin: 0; font: 600 16px/1.3 "IBM Plex Mono", monospace; overflow-wrap: anywhere; }
+    .kind { color: var(--rust); font: 600 10px/1.3 "IBM Plex Mono", monospace; text-transform: uppercase; letter-spacing: .05em; }
+    .skill > p { margin: 12px 0 18px; color: var(--muted); font-size: 14px; }
+    .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; margin-top: auto; padding-top: 15px; border-top: 1px solid var(--line); }
+    .facts b { display: block; color: var(--muted); font: 500 10px/1.2 "IBM Plex Mono", monospace; text-transform: uppercase; letter-spacing: .05em; }
+    .facts span { display: block; margin-top: 4px; font-size: 12px; }
+    .skill a { display: inline-block; margin-top: 15px; color: var(--teal); font-size: 12px; overflow-wrap: anywhere; text-underline-offset: 3px; }
+
+    details { border-top: 1px solid var(--line); }
+    details:last-child { border-bottom: 1px solid var(--line); }
+    summary {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      padding: 20px 0;
+      cursor: pointer;
+      list-style: none;
+      font-weight: 600;
+    }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; color: var(--rust); font: 500 24px/1 "IBM Plex Mono", monospace; }
+    details[open] summary::after { content: "−"; }
+    details .detail-body { padding: 0 0 22px; color: var(--muted); }
+    details .detail-body p { margin: 0; }
+    details .detail-body a { color: var(--teal); text-underline-offset: 3px; }
+
+    .install-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, .75fr); gap: 22px; }
+    .steps { margin: 0; padding: 0; list-style: none; counter-reset: install; }
+    .steps li { counter-increment: install; display: grid; grid-template-columns: 36px 1fr; gap: 15px; margin-bottom: 20px; }
+    .steps li::before { content: "0" counter(install); color: var(--rust); font: 600 13px/1.5 "IBM Plex Mono", monospace; }
+    .steps strong { display: block; }
+    .steps span { display: block; margin-top: 4px; color: var(--muted); font-size: 14px; }
+    .steps code, p code, li code { padding: .1em .34em; background: var(--surface-2); border-radius: 3px; font-family: "IBM Plex Mono", monospace; font-size: .9em; }
+    .command-stack { display: grid; gap: 11px; }
+    .command { position: relative; }
+    .command pre { min-height: 0; padding-right: 70px; }
+
+    .open-questions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .question { padding: 18px; border: 1px solid var(--line); background: var(--surface); }
+    .question strong { display: block; font-size: 14px; }
+    .question p { margin: 8px 0 0; color: var(--muted); font-size: 13px; }
+
+    .sources { margin-top: 78px; padding-top: 26px; border-top: 1px solid var(--line); }
+    .sources h2 { font-size: 24px; }
+    .sources p { color: var(--muted); font-size: 13px; }
+    .source-list { columns: 2; column-gap: 32px; padding: 0; list-style: none; }
+    .source-list li { break-inside: avoid; margin: 0 0 9px; }
+    .source-list a { color: var(--teal); font-size: 12px; overflow-wrap: anywhere; text-underline-offset: 3px; }
+
+    footer { padding: 28px 0; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+
+    @media (max-width: 900px) {
+      .hero-grid, .coordination, .install-grid { grid-template-columns: 1fr; }
+      .verdict { max-width: 620px; }
+      .page-grid { grid-template-columns: 1fr; }
+      .side { position: static; display: none; }
+      .signals { grid-template-columns: repeat(2, 1fr); }
+      .signal:nth-child(2) { border-right: 0; }
+      .signal:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+      .signal:nth-child(3) { padding-left: 0; }
+    }
+
+    @media (max-width: 640px) {
+      .wrap { width: min(100% - 28px, var(--max)); }
+      .hero { padding-top: 42px; }
+      h1 { font-size: clamp(34px, 12vw, 48px); }
+      .hero-copy { font-size: 17px; }
+      .signal { padding: 15px 12px; }
+      .signal strong { font-size: 17px; }
+      .section-head { grid-template-columns: 1fr; gap: 12px; }
+      .decision { grid-template-columns: 38px minmax(0, 1fr); gap: 12px; }
+      .decision .tag { grid-column: 2; justify-self: start; }
+      .coordination { padding: 22px 18px; }
+      .inventory, .open-questions { grid-template-columns: 1fr; }
+      .facts { grid-template-columns: 1fr; }
+      .source-list { columns: 1; }
+      .content section + section { margin-top: 62px; }
+      .page-grid { padding-top: 42px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    @media print {
+      .side, .filters, .copy-btn { display: none !important; }
+      .page-grid, .hero-grid, .coordination, .install-grid { display: block; }
+      .skill.hide { display: flex; }
+      body { background: #fff; color: #000; }
+      .content section { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">Research snapshot · 10 Oct 2026</p>
+        <h1>Build the skill stack around the port.</h1>
+        <p class="hero-copy">For this Bevy 0.19 project, the best answer is not one giant plugin. Use a tight set of version-pinned Rust, Bevy, BRP, asset-pipeline, and task-claiming skills—then keep project rules in the repository.</p>
+      </div>
+      <aside class="verdict" aria-label="Research verdict">
+        <p class="verdict-label">Bottom line</p>
+        <strong>Install one workflow, adapt three core skills, write three project skills—including task coordination—and keep one shader skill optional.</strong>
+        <p>No public Bevy skill covers this exact Windows + 0.19 + classic-game-port setup end to end.</p>
+      </aside>
+    </div>
+  </header>
+
+  <div class="signal-bar">
+    <div class="wrap signals" aria-label="Research summary">
+      <div class="signal"><strong>8</strong><span>recommended skills</span></div>
+      <div class="signal"><strong>0.19.x</strong><span>Bevy APIs must be pinned</span></div>
+      <div class="signal"><strong>TASKS.md</strong><span>cross-agent source of truth</span></div>
+      <div class="signal"><strong>Windows</strong><span>PowerShell-first coordination</span></div>
+    </div>
+  </div>
+
+  <div class="wrap page-grid">
+    <nav class="side" aria-label="On this page">
+      <p>On this page</p>
+      <a href="#stack">Recommended stack</a>
+      <a href="#coordination">Who works on what</a>
+      <a href="#inventory">Skill inventory</a>
+      <a href="#skip">What to skip</a>
+      <a href="#install">Install guide</a>
+      <a href="#questions">Open questions</a>
+      <a href="#sources">Sources</a>
+      <div class="snapshot">Grounded in the supplied deep-research report. Maintenance ages are those observed on 10 Oct 2026.</div>
+    </nav>
+
+    <main class="content">
+      <section id="stack">
+        <div class="section-head">
+          <div><span class="section-no">01 / PRIORITY STACK</span><h2>Install in this order</h2></div>
+          <p>The first four improve Claude Code immediately. The next four encode decisions only this project can make.</p>
+        </div>
+
+        <div class="decision">
+          <span class="rank">01</span>
+          <div><h3><span class="mono">bevy-019</span></h3><div class="meta">Base: smanaton + acevik/baylee</div><p>Start from the standalone project-agnostic Bevy 0.19 skill. Pin the project’s actual 0.19.x version, require docs.rs verification before asserting APIs, and add the 0.19 migration deltas and ECS pitfalls. This directly attacks the most common failure: confident use of pre-0.19 APIs. <a href="https://github.com/smanaton/bevy-skill">Source</a></p></div>
+          <span class="tag adapt">Adapt</span>
+        </div>
+        <div class="decision">
+          <span class="rank">02</span>
+          <div><h3><span class="mono">rust-workflow</span></h3><div class="meta">Base: kevinreber + mesopotamia + slopctl</div><p>Combine cargo command discipline, clippy-as-oracle, idiomatic error handling, and a strict gate: <code>cargo check</code> → clippy with warnings denied → fmt check → tests. Read edition and MSRV from <code>Cargo.toml</code> rather than hardcoding them. <a href="https://github.com/kevinreber/claude-code-configs/blob/HEAD/skills/rust/SKILL.md">Source</a></p></div>
+          <span class="tag adapt">Adapt</span>
+        </div>
+        <div class="decision">
+          <span class="rank">03</span>
+          <div><h3><span class="mono">brp-agent-loop</span></h3><div class="meta">Base: grok-bevy playbook + existing BRP MCP</div><p>Codify build once → wait for BRP on port 15702 → query → mutate → re-query → capture viewport → fix. Keep cold-build and warm-iteration modes separate, and make “an unverified visual change is not done” the completion rule. Direct-copy compatibility of the bundled playbook remains unverified, so inspect its format before relocating it. <a href="https://github.com/ironadamant/grok-bevy">Source</a></p></div>
+          <span class="tag adapt">Adapt</span>
+        </div>
+        <div class="decision">
+          <span class="rank">04</span>
+          <div><h3><span class="mono">superpowers</span></h3><div class="meta">Plan → execute → review → finish branch</div><p>Use its planning and review discipline around long porting work: precise file paths, verification steps, subagent-driven development, code review, and branch completion. Pair it with the cross-tool task board below. <a href="https://github.com/obra/superpowers">Source</a></p></div>
+          <span class="tag install">Install</span>
+        </div>
+        <div class="decision">
+          <span class="rank">05</span>
+          <div><h3><span class="mono">porting-conventions</span></h3><div class="meta">Project-specific, highest-value custom skill</div><p>Record the module-per-original-subsystem convention, one Bevy plugin per ported subsystem, fixed-point and color-format mappings, simulation timing assumptions, asset roots, seeded randomness, and the separation between renderer and game logic. No public skill can know these decisions.</p></div>
+          <span class="tag write">Write</span>
+        </div>
+        <div class="decision">
+          <span class="rank">06</span>
+          <div><h3><span class="mono">blender-glb-pipeline</span></h3><div class="meta">Base: baylee blender skill, rewritten for the port</div><p>Pin Blender, define the .glb export checklist, transforms, triangulation, embedded textures, animation and node naming, material-slot expectations, and the Blender → import → BRP screenshot verification loop. <a href="https://github.com/acevik/baylee/blob/HEAD/.claude/skills/blender/SKILL.md">Source</a></p></div>
+          <span class="tag write">Write / adapt</span>
+        </div>
+        <div class="decision">
+          <span class="rank">07</span>
+          <div><h3><span class="mono">task-coordination</span></h3><div class="meta">Cross-tool contract for Muse + Claude Code</div><p>Keep one repository-level <code>TASKS.md</code>, claim before coding, name the agent, record the commit on completion, and reclaim stale claims after 24 hours. Use direct file edits or a PowerShell helper instead of requiring a shell script on Windows.</p></div>
+          <span class="tag write">Write</span>
+        </div>
+        <div class="decision">
+          <span class="rank">08</span>
+          <div><h3><span class="mono">wgsl-shaders</span></h3><div class="meta">Only if the GameCube look needs custom shaders</div><p>Take wgpu from the pinned Bevy dependency—not latest wgpu—use conservative WGSL compatible with naga, and document uniform-layout alignment. <a href="https://github.com/acevik/baylee/blob/HEAD/.claude/skills/wgsl-shaders/SKILL.md">Source</a></p></div>
+          <span class="tag adapt">Optional</span>
+        </div>
+      </section>
+
+      <section id="coordination">
+        <div class="section-head">
+          <div><span class="section-no">02 / COORDINATION</span><h2>Stop duplicate work at the claim</h2></div>
+          <p>Built-in Agent Teams coordinates Claude Code sessions. It does not span Muse and Claude Code CLI, so the durable contract must live in the project.</p>
+        </div>
+
+        <div class="coordination">
+          <div>
+            <h3>Recommended: one shared <span class="mono">TASKS.md</span></h3>
+            <p>Each agent reads the file first, claims one item before touching code, and writes a completion record. This is simpler and more transparent than asking two independent runtimes to infer each other’s state.</p>
+            <ol class="rules">
+              <li><span><strong>Claim before code.</strong> Change an available item to a claimed state with <code>assistant</code> or <code>claude-code</code>.</span></li>
+              <li><span><strong>Own one clear surface.</strong> Include files or subsystem boundaries in the task text.</span></li>
+              <li><span><strong>Finish with proof.</strong> Record the commit and verification command, or mark a concrete failure reason.</span></li>
+              <li><span><strong>Reclaim stale work.</strong> A claim older than 24 hours is reclaimable after checking the branch and working tree.</span></li>
+            </ol>
+            <div class="callout"><strong>Windows choice:</strong> edit the file directly or port the atomic claim helper to PowerShell. The public <span class="mono">opus-orchestra</span> helper is a <span class="mono">.sh</span> script and therefore needs Git Bash or WSL.</div>
+          </div>
+          <div class="code-box">
+            <button class="copy-btn" type="button" data-copy="task-template">Copy</button>
+            <pre id="task-template"># TASKS
+
+## Available
+- [ ] Port villager schedule data
+  owner: —
+  scope: src/villager/schedule/**
+  verify: cargo test villager::schedule
+
+## Claimed
+- [🟡 claude-code] Import map collision meshes
+  claimed: 2026-10-10
+  scope: src/world/collision.rs, assets/maps/**
+
+## Done
+- [✅ abc1234] Add BRP development plugin
+  owner: assistant
+  verify: cargo check
+
+## Failed
+- [❌ blocked: missing format notes] Decode NPC names</pre>
+          </div>
+        </div>
+      </section>
+
+      <section id="inventory">
+        <div class="section-head">
+          <div><span class="section-no">03 / INVENTORY</span><h2>Public skills worth knowing</h2></div>
+          <p>Filter by domain. Version and maintenance notes are the research snapshot, not guarantees of future compatibility.</p>
+        </div>
+        <div class="filters" role="group" aria-label="Filter skill inventory">
+          <button class="filter active" type="button" data-filter="all">All</button>
+          <button class="filter" type="button" data-filter="rust">Rust</button>
+          <button class="filter" type="button" data-filter="bevy">Bevy</button>
+          <button class="filter" type="button" data-filter="coord">Coordination</button>
+        </div>
+
+        <div class="inventory">
+          <article class="skill" data-kind="rust"><div class="skill-top"><h3>rust</h3><span class="kind">Rust</span></div><p>Cargo tooling, anyhow/thiserror boundaries, and a no-unwrap policy. Good focused base for the project workflow skill.</p><div class="facts"><div><b>Coverage</b><span>Toolchain-agnostic</span></div><div><b>Maintenance</b><span>~40 days</span></div><div><b>Windows</b><span>POSIX snippets need adapting</span></div></div><a href="https://github.com/kevinreber/claude-code-configs/blob/HEAD/skills/rust/SKILL.md">kevinreber/claude-code-configs</a></article>
+          <article class="skill" data-kind="rust"><div class="skill-top"><h3>rust-build-commands</h3><span class="kind">Rust</span></div><p>A cargo reference card that codifies check-before-build and debug-in-development habits.</p><div class="facts"><div><b>Coverage</b><span>Toolchain-agnostic</span></div><div><b>Maintenance</b><span>~41 days</span></div><div><b>Windows</b><span>Adapt POSIX snippets</span></div></div><a href="https://github.com/heikopanjas/slopctl/blob/HEAD/.claude/skills/rust-build-commands/SKILL.md">heikopanjas/slopctl</a></article>
+          <article class="skill" data-kind="rust"><div class="skill-top"><h3>cargo-clippy</h3><span class="kind">Rust</span></div><p>Runs clippy with JSON output, groups findings by file, and exits non-zero on errors.</p><div class="facts"><div><b>Coverage</b><span>Toolchain-agnostic</span></div><div><b>Maintenance</b><span>~57 days</span></div><div><b>Windows</b><span>No special note</span></div></div><a href="https://github.com/heretek-ai/heretek-claude-harness/blob/HEAD/plugins/rust/skills/cargo-clippy/SKILL.md">heretek-ai/heretek-claude-harness</a></article>
+          <article class="skill" data-kind="rust"><div class="skill-top"><h3>rust-clippy-gate</h3><span class="kind">Rust</span></div><p>A zero-warning gate with common fixes and anti-rationalization guidance before completion.</p><div class="facts"><div><b>Coverage</b><span>Toolchain-agnostic</span></div><div><b>Maintenance</b><span>~155 days</span></div><div><b>Windows</b><span>No special note</span></div></div><a href="https://github.com/marcusedwardhaslam/querybox/blob/HEAD/.claude/skills/rust-clippy-gate/SKILL.md">marcusedwardhaslam/querybox</a></article>
+          <article class="skill" data-kind="rust"><div class="skill-top"><h3>rust-idioms</h3><span class="kind">Rust</span></div><p>Distills API guidelines and design patterns, treating clippy’s 700+ lints as the idiom oracle.</p><div class="facts"><div><b>Coverage</b><span>Toolchain-agnostic</span></div><div><b>Maintenance</b><span>~32 days</span></div><div><b>Windows</b><span>No special note</span></div></div><a href="https://github.com/saxonthune/mesopotamia/blob/HEAD/.claude/skills/rust-idioms/SKILL.md">saxonthune/mesopotamia</a></article>
+          <article class="skill" data-kind="rust"><div class="skill-top"><h3>rust-type-driven</h3><span class="kind">Rust</span></div><p>Parse-don’t-validate, newtypes, typed errors, cancellation, and unsafe minimization.</p><div class="facts"><div><b>Coverage</b><span>Toolchain-agnostic</span></div><div><b>Maintenance</b><span>Active repository</span></div><div><b>Windows</b><span>No special note</span></div></div><a href="https://github.com/leodutra/agent-skills">leodutra/agent-skills</a></article>
+          <article class="skill" data-kind="rust"><div class="skill-top"><h3>rust-2024</h3><span class="kind">Rust</span></div><p>Edition 2024, MSRV-from-Cargo.toml, forbid-unsafe guidance, pedantic clippy, and determinism rules.</p><div class="facts"><div><b>Coverage</b><span>Rust 1.95 in Baylee context</span></div><div><b>Maintenance</b><span>Verified 2026-09-06</span></div><div><b>Windows</b><span>No special note</span></div></div><a href="https://github.com/acevik/baylee/blob/HEAD/.claude/skills/rust-2024/SKILL.md">acevik/baylee</a></article>
+          <article class="skill" data-kind="rust"><div class="skill-top"><h3>rust-skills</h3><span class="kind">Rust</span></div><p>A large meta-cognition framework with dynamic skills from Cargo.toml and domain extensions. Powerful, but heavyweight here.</p><div class="facts"><div><b>Coverage</b><span>Claims current crate info</span></div><div><b>Maintenance</b><span>v2.0.9 · ~47 days</span></div><div><b>Windows</b><span>No special note</span></div></div><a href="https://github.com/actionbook/rust-skills">actionbook/rust-skills</a></article>
+
+          <article class="skill" data-kind="bevy"><div class="skill-top"><h3>bevy · smanaton</h3><span class="kind">Bevy</span></div><p>The only standalone project-agnostic skill found that explicitly targets Bevy 0.19, including migration guidance.</p><div class="facts"><div><b>Coverage</b><span>Bevy 0.19</span></div><div><b>Maintenance</b><span>~83 days · MIT</span></div><div><b>Windows</b><span>No special note</span></div></div><a href="https://github.com/smanaton/bevy-skill">smanaton/bevy-skill</a></article>
+          <article class="skill" data-kind="bevy"><div class="skill-top"><h3>bevy · baylee</h3><span class="kind">Bevy</span></div><p>Pins 0.19.1 and requires verification against docs.rs; its second half is card-game-specific.</p><div class="facts"><div><b>Coverage</b><span>Bevy 0.19.1</span></div><div><b>Maintenance</b><span>Verified 2026-09-06</span></div><div><b>Windows</b><span>No special note</span></div></div><a href="https://github.com/acevik/baylee/blob/HEAD/.claude/skills/bevy/SKILL.md">acevik/baylee</a></article>
+          <article class="skill" data-kind="bevy"><div class="skill-top"><h3>bevy · trobanga</h3><span class="kind">Bevy</span></div><p>The richest ECS and pitfall reference found, but it targets 0.18 and needs a delta pass before use.</p><div class="facts"><div><b>Coverage</b><span>Bevy 0.18</span></div><div><b>Maintenance</b><span>Repository ~15 days</span></div><div><b>Windows</b><span>Dynamic-linking quirks</span></div></div><a href="https://github.com/trobanga/claude-plugins/blob/HEAD/plugins/trobanga-skills/skills/gamedev/bevy/SKILL.md">trobanga/claude-plugins</a></article>
+          <article class="skill" data-kind="bevy"><div class="skill-top"><h3>grok-bevy playbooks</h3><span class="kind">Bevy</span></div><p>Production, 2D/3D, and live agent-loop playbooks plus BRP query, mutate, launch, and screenshot tooling.</p><div class="facts"><div><b>Coverage</b><span>Bevy 0.19 · BRP extras 0.22.1</span></div><div><b>Maintenance</b><span>~76 days · Apache-2.0</span></div><div><b>Windows</b><span>Doctor tips; port 15702</span></div></div><a href="https://github.com/ironadamant/grok-bevy">ironadamant/grok-bevy</a></article>
+          <article class="skill" data-kind="bevy"><div class="skill-top"><h3>bevy-ecs</h3><span class="kind">Bevy</span></div><p>Basic ECS onboarding from the game-dev skills collection; too old for this project’s API surface.</p><div class="facts"><div><b>Coverage</b><span>Bevy 0.16+</span></div><div><b>Maintenance</b><span>Created 2026-07-25</span></div><div><b>Windows</b><span>No special note</span></div></div><a href="https://github.com/s477474/awesome-gamedev-agent-skills">s477474/awesome-gamedev-agent-skills</a></article>
+
+          <article class="skill" data-kind="coord"><div class="skill-top"><h3>task-coordination</h3><span class="kind">Coordination</span></div><p>Atomic file-based task claiming with claim, release, complete, and agent identity from a git branch.</p><div class="facts"><div><b>Coverage</b><span>Tool-agnostic</span></div><div><b>Maintenance</b><span>~263 days</span></div><div><b>Windows</b><span>.sh needs Git Bash/WSL</span></div></div><a href="https://github.com/renxida/opus-orchestra">renxida/opus-orchestra</a></article>
+          <article class="skill" data-kind="coord"><div class="skill-top"><h3>parallel-autonomous-agents</h3><span class="kind">Coordination</span></div><p>Lock-file claiming plus stale-lock reclamation, preventing a crashed agent from stranding work forever.</p><div class="facts"><div><b>Coverage</b><span>Tool-agnostic</span></div><div><b>Maintenance</b><span>~101 days</span></div><div><b>Windows</b><span>Lock files are OS-neutral</span></div></div><a href="https://github.com/pebeto/agent-stdlib">pebeto/agent-stdlib</a></article>
+          <article class="skill" data-kind="coord"><div class="skill-top"><h3>multi-agent CLI fleet</h3><span class="kind">Coordination</span></div><p>An orchestrator and heterogeneous CLI workers over a file queue—the closest public pattern to Muse + Claude Code.</p><div class="facts"><div><b>Coverage</b><span>Tool-agnostic</span></div><div><b>Maintenance</b><span>~93 days</span></div><div><b>Windows</b><span>Subprocess-based</span></div></div><a href="https://github.com/aiscorpio/multi-agent-cli-orchestration-fleet">aiscorpio/multi-agent-cli-orchestration-fleet</a></article>
+          <article class="skill" data-kind="coord"><div class="skill-top"><h3>claude-orchestra</h3><span class="kind">Coordination</span></div><p>A shared task board and inbox designed to persist coordination across Claude Code sessions.</p><div class="facts"><div><b>Coverage</b><span>Claude Code</span></div><div><b>Maintenance</b><span>~150 days</span></div><div><b>Windows</b><span>No special note</span></div></div><a href="https://github.com/ronnie-rouse/claude-orchestra">ronnie-rouse/claude-orchestra</a></article>
+        </div>
+      </section>
+
+      <section id="skip">
+        <div class="section-head">
+          <div><span class="section-no">04 / AVOID DRIFT</span><h2>Skip these as-is</h2></div>
+          <p>Some are useful references, but installing them unchanged would add stale APIs or unnecessary machinery.</p>
+        </div>
+        <details><summary>Genex skill</summary><div class="detail-body"><p>It is an AI asset-generation service—not a Bevy porting skill. It adds an external paid dependency and sign-in, and it is a poor fit for faithful GameCube-era asset reproduction. <a href="https://github.com/genex-games/genex">View source</a></p></div></details>
+        <details><summary>bevy-ecs from gamedev-skills</summary><div class="detail-body"><p>Its Bevy 0.16+ guidance is too old for a 0.19 project and risks teaching stale APIs. Engine-agnostic discipline skills from the same collection may still be useful.</p></div></details>
+        <details><summary>trobanga Bevy skill, unchanged</summary><div class="detail-body"><p>Excellent reference material, but targeted at Bevy 0.18. Mine its ECS and glTF pitfalls only after doing a 0.19 delta pass.</p></div></details>
+        <details><summary>Full actionbook/rust-skills plugin</summary><div class="detail-body"><p>Evaluate rather than install by default. Its large meta-cognition framework overlaps the focused <span class="mono">rust-workflow</span> this project needs and may be overkill.</p></div></details>
+        <details><summary>Agent Teams for Muse ↔ Claude Code handoff</summary><div class="detail-body"><p>The experimental built-in feature coordinates Claude Code sessions only. Use it later for multiple Claude Code teammates, not as the cross-tool source of truth.</p></div></details>
+      </section>
+
+      <section id="install">
+        <div class="section-head">
+          <div><span class="section-no">05 / INSTALLATION</span><h2>How Claude Code finds skills</h2></div>
+          <p>Official Claude Code documentation was read live on 10 Oct 2026. Project scope is the right default because the skill travels with the repository.</p>
+        </div>
+        <div class="install-grid">
+          <ol class="steps">
+            <li><div><strong>Create one directory per skill.</strong><span>Use <code>.claude/skills/&lt;skill-name&gt;/SKILL.md</code>. Optional helpers belong in sibling <code>scripts/</code>, <code>references/</code>, or <code>assets/</code>.</span></div></li>
+            <li><div><strong>Add YAML frontmatter.</strong><span><code>description</code> is recommended and drives automatic matching. Useful fields include <code>name</code>, <code>when_to_use</code>, <code>shell</code>, tool limits, paths, model, and hooks.</span></div></li>
+            <li><div><strong>Prefer PowerShell on Windows.</strong><span>Set <code>shell: powershell</code> when a skill embeds commands and the machine is not relying on Git Bash.</span></div></li>
+            <li><div><strong>No registration is required.</strong><span>Claude Code auto-discovers the directory. Invoke with <code>/skill-name</code> or let the description match the task. For a brand-new top-level skills directory, run <code>/reload-skills</code>.</span></div></li>
+          </ol>
+          <div class="command-stack" aria-label="Install command examples">
+            <div class="command"><button class="copy-btn" type="button" data-copy="layout-code">Copy</button><pre id="layout-code">.claude/skills/bevy-019/
+├── SKILL.md
+└── references/</pre></div>
+            <div class="command"><button class="copy-btn" type="button" data-copy="skills-cli">Copy</button><pre id="skills-cli">npx skills add &lt;org&gt;/&lt;repo&gt;</pre></div>
+            <div class="command"><button class="copy-btn" type="button" data-copy="plugin-code">Copy</button><pre id="plugin-code">/plugin marketplace add obra/superpowers-marketplace
+/plugin install superpowers@superpowers-marketplace</pre></div>
+            <p><a class="source-link" href="https://code.claude.com/docs/en/skills">Official Claude Code skills documentation ↗</a></p>
+          </div>
+        </div>
+      </section>
+
+      <section id="questions">
+        <div class="section-head">
+          <div><span class="section-no">06 / VERIFY BEFORE INSTALL</span><h2>Open questions</h2></div>
+          <p>These are genuine gaps in the research. Resolve them at installation time rather than guessing.</p>
+        </div>
+        <div class="open-questions">
+          <div class="question"><strong>Which exact Bevy 0.19.x is in Cargo.toml?</strong><p>Baylee pins 0.19.1, but the project’s actual dependency is authoritative. Re-check docs.rs and migration notes against that pin.</p></div>
+          <div class="question"><strong>What edition, MSRV, and features are configured?</strong><p>The project file was not part of the research. Read <code>Cargo.toml</code>; do not inherit Baylee’s Rust 1.95 assumption blindly.</p></div>
+          <div class="question"><strong>Can grok-bevy’s playbook be copied directly?</strong><p>Its files live under <code>.grok/skills/</code>; direct Agent-Skills-format compatibility was not confirmed. Inspect and rewrite if necessary.</p></div>
+          <div class="question"><strong>Which porting conventions are already settled?</strong><p>Module boundaries, timing, asset roots, determinism, and renderer/game-logic separation should reflect project decisions, not public templates.</p></div>
+        </div>
+      </section>
+
+      <section class="sources" id="sources">
+        <h2>Primary sources</h2>
+        <p>Links below were carried directly from the deep-research report. Repository ages and compatibility notes are a dated snapshot.</p>
+        <ul class="source-list">
+          <li><a href="https://code.claude.com/docs/en/skills">Claude Code skills documentation</a></li>
+          <li><a href="https://github.com/smanaton/bevy-skill">smanaton/bevy-skill</a></li>
+          <li><a href="https://github.com/acevik/baylee/blob/HEAD/.claude/skills/bevy/SKILL.md">acevik/baylee · Bevy skill</a></li>
+          <li><a href="https://github.com/ironadamant/grok-bevy">ironadamant/grok-bevy</a></li>
+          <li><a href="https://github.com/trobanga/claude-plugins/blob/HEAD/plugins/trobanga-skills/skills/gamedev/bevy/SKILL.md">trobanga Bevy skill</a></li>
+          <li><a href="https://github.com/kevinreber/claude-code-configs/blob/HEAD/skills/rust/SKILL.md">kevinreber Rust skill</a></li>
+          <li><a href="https://github.com/saxonthune/mesopotamia/blob/HEAD/.claude/skills/rust-idioms/SKILL.md">mesopotamia rust-idioms</a></li>
+          <li><a href="https://github.com/heikopanjas/slopctl/blob/HEAD/.claude/skills/rust-build-commands/SKILL.md">slopctl rust-build-commands</a></li>
+          <li><a href="https://github.com/renxida/opus-orchestra">opus-orchestra</a></li>
+          <li><a href="https://github.com/aiscorpio/multi-agent-cli-orchestration-fleet">multi-agent CLI orchestration fleet</a></li>
+          <li><a href="https://github.com/pebeto/agent-stdlib">pebeto/agent-stdlib</a></li>
+          <li><a href="https://github.com/obra/superpowers">obra/superpowers</a></li>
+        </ul>
+      </section>
+    </main>
+  </div>
+
+  <footer><div class="wrap">Research-backed recommendations for a Windows, Claude Code, Rust, Bevy 0.19, Blender, and BRP workflow.</div></footer>
+
+  <script>
+    (function () {
+      var filters = document.querySelectorAll('.filter');
+      var cards = document.querySelectorAll('.skill');
+      filters.forEach(function (button) {
+        button.addEventListener('click', function () {
+          var wanted = button.getAttribute('data-filter');
+          filters.forEach(function (item) { item.classList.toggle('active', item === button); });
+          cards.forEach(function (card) {
+            card.classList.toggle('hide', wanted !== 'all' && card.getAttribute('data-kind') !== wanted);
+          });
+        });
+      });
+
+      document.querySelectorAll('[data-copy]').forEach(function (button) {
+        button.addEventListener('click', function () {
+          var target = document.getElementById(button.getAttribute('data-copy'));
+          if (!target || !navigator.clipboard) return;
+          navigator.clipboard.writeText(target.textContent).then(function () {
+            var old = button.textContent;
+            button.textContent = 'Copied';
+            window.setTimeout(function () { button.textContent = old; }, 1400);
+          });
+        });
+      });
+    }());
+  </script>
+</body>
+</html>
