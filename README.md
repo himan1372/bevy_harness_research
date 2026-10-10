@@ -1,8 +1,11 @@
 # Bevy Harness Research
 
-A comparison of AI coding-agent harnesses for porting a game to the **Bevy engine (Rust)** — researched October 2026.
+Research notes for porting a game to the **Bevy engine (Rust)** with Claude Code — October 2026.
 
-- `index.html` — the full interactive comparison: per-harness pros/cons, Claude Code fit ranking, local-model delegation guide, and recommendations, all with sources.
+## Pages
+
+- [Harness comparison](https://himan1372.github.io/bevy_harness_research/) (`index.html`) — per-harness pros/cons, Claude Code fit ranking, local-model delegation guide, and recommendations, all with sources.
+- [Recommended skills](https://himan1372.github.io/bevy_harness_research/skills.html) (`skills.html`) — the skill stack for Rust + Bevy development: what to install, what to write, what to skip, plus a task-coordination system so agents don't duplicate work.
 
 ## Headline findings
 
